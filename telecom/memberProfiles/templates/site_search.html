@@ -1,0 +1,62 @@
+{% extends "./site_home.html" %}
+
+{% block content %}
+    {% load static %} <!-- Loading static to use the static template tag -->
+
+    <!-- Iterate over each user and image pair in search results -->
+    {% for user, image in search_result %}
+
+        <!-- Start of individual search result container -->
+        <div class="col-8 col-md-4 my-5 mx-auto">
+
+            <!-- Start of user card -->
+            <div class="card my-3">
+
+                <!-- Card header containing user details -->
+                <div class="card-header">
+                    <div class="row">
+
+                        <!-- User image section -->
+                        <div class="col-3 col-md-3">
+                            <!-- Display user's image if it exists, otherwise display default image -->
+                            {% if image != 'appMedia/person.png' %}
+                                <img src="{{ image }}" class="rounded-circle pull-left" width="100%">
+                            {% else %}
+                                <!-- Default profile picture if the user hasn't set one -->
+                                <img src="{% static 'appMedia/person.png' %}" class="rounded-circle pull-left" width="100%">
+                            {% endif %}
+                        </div>
+
+                        <!-- User details section -->
+                        <div class="col-5 col-md-5 my-auto">
+
+                            <!-- If the user is the same as the logged-in user, link to their profile, otherwise link to the friend's profile -->
+                            {% if user == request.user %}
+                                <a class="row card-text" href="profile" style="font-size: 22px;">
+                                    {{ user.username }}
+                                </a>
+                            {% else %}
+                                <a class="row card-text" href="friendDetail/{{ user.username }}" style="font-size: 22px;">
+                                    {{ user.username }}
+                                </a>
+                            {% endif %}
+
+                            <!-- Display the user's full name -->
+                            <p class="row" style="font-size: 12px;">{{ user.first_name }} {{ user.last_name }}</p>
+                        </div>
+
+                        <!-- Display a tag if the user is the same as the logged-in user -->
+                        {% if user == request.user %}
+                            <div class="col-4 col-md-4 mt-3">
+                                <p class="btn btn-light border-secondary text-secondary pull-right">This is me</p>
+                            </div>
+                        {% endif %}
+
+                    </div> <!-- End of user card details row -->
+                </div> <!-- End of card header -->
+
+            </div> <!-- End of user card -->
+        </div> <!-- End of individual search result container -->
+
+    {% endfor %} <!-- End of user and image iteration -->
+{% endblock content %}

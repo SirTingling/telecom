@@ -1,0 +1,106 @@
+<!-- Load Django's static files handler -->
+{% load static %}
+
+<!-- Header section, which is fixed at the top -->
+<header class="sticky-top">
+    
+    <!-- Navbar section -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        
+        <!-- Brand name link leading to the homepage -->
+        <a class="navbar-brand" href="/">Telecom Inc.</a>
+
+        <!-- Check if the user is authenticated (logged in) -->
+        {% if request.user.is_authenticated %}
+            
+            <!-- Button to toggle navbar on smaller screens -->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Collapsible part of the navbar -->
+            <div class="collapse navbar-collapse" id="navbar">
+                
+                <!-- Form for searching other users -->
+                <form class="form-inline my-2 my-lg-0" method="POST" action="{% url 'search_for_users'%}">
+                    {% csrf_token %}
+                    <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search">
+                    <span class="input-group-append">
+                        <button class="btn btn-outline-light my-2 my-sm-0" type="submit">
+                            <i class="fa fa-search text-light"></i>
+                        </button>
+                    </span>
+                </form>
+
+                <!-- Nav links on the right side -->
+                <div class="navbar-nav ml-auto">
+                    
+                    <!-- Home icon and link -->
+                    <li class="{% if navbar == 'home' %}active{% endif %}">
+                        <a class="nav-item nav-link my-2" href="/">
+                            <i class="fa-solid fa-house icons"></i>
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+
+                    <!-- Chat icon and link -->
+                    <li class="{% if navbar == 'chat' %}active{% endif %}">
+                        <a class="nav-item nav-link my-2" href="/chat">
+                            <i class="fa-solid fa-comments icons"></i>
+                        </a>
+                    </li>
+                    
+                    <!-- Dropdown menu for the profile, settings, and logout -->
+                    <div class="nav-item dropdown my-auto">
+                        <!-- Toggle for the dropdown menu, displays user picture -->
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <!-- Display user's profile image or default image -->
+                            {% if profile_form.image.value != 'appMedia/person.png' %}
+                                <img src="/media/{{ profile_form.image.value }}" class="rounded-circle profile">
+                            {% else %}
+                                <img src="{% static 'appMedia/person.png' %}" class="rounded-circle profile bg-light">
+                            {% endif %}
+                        </a>
+                        <!-- Dropdown menu links -->
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="/profile">Profile</a>
+                            <a class="dropdown-item" href="#">Settings</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- If user is not authenticated, provide links to register and login -->
+        {% else %}
+        <div class="navbar-nav ml-auto">
+            <!-- Register link -->
+            <a class="nav-item nav-link my-2 text-light" href="register">
+                Register
+            </a>
+            <!-- Login link -->
+            <a class="nav-item nav-link my-2 text-light" href="login">
+                Login
+            </a>
+        </div>
+        {% endif %}
+    </nav>
+</header>
+
+<!-- Styles specific to this template -->
+<style>
+    /* Style for icons in the navigation bar */
+    .icons {
+        font-size: 30px;
+    }
+
+    /* Style for user's profile picture in the navigation bar */
+    .profile {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        min-height: 45px;
+        margin: auto;
+    }
+</style>
+<!--END OF THE HEADER component-->

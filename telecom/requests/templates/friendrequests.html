@@ -1,0 +1,309 @@
+{% extends "./site_home.html" %}
+{% block content %}
+    {% load static %}
+    <div class="container">
+        <div class="row">
+            <!-- Profile -->
+            <div class="col-12 col-md-4 my-5">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-md-7">
+                                {% if profile.image != 'appMedia/person.png' %}
+                                    <!-- Display user's profile image if available, else show default image -->
+                                    <img src="/media/{{ profile.image }}" class="rounded-circle pull-left" width="50%">
+                                {% else %}
+                                    <!-- Display default profile image -->
+                                    <img src="{% static 'appMedia/person.png' %}" class="rounded-circle pull-left" width="50%">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-5 mt-2 px-2">
+                                <!-- Handle friend requests and friend management -->
+                                {% if is_friend == False %}
+                                    {% if request_status == 2 %}
+                                        <!-- Display cancel request button if a request is sent -->
+                                        <button class="btn btn-secondary pull-right mb-2" id="cancelRequestBtn" onclick="cancel_Request('{{user.id}}', reloadUI)" style="font-size: 12px;">Cancel Request</button>
+                                    {% endif %}
+                                    {% if request_status == 1 %}
+                                        <!-- Display accept and decline buttons for received friend requests -->
+                                        <button class="btn btn-secondary pull-right mb-2" id="id_confirm_{{id}}" onclick='approve_friend_request("{{req_id}}", reloadUI)' style="font-size: 12px;">Accept Request</button>
+                                        <button class="btn btn-secondary pull-right mb-2" id="id_cancel_{{id}}" onclick='reject_friend_request("{{req_id}}", reloadUI)' style="font-size: 12px;">Decline Request</button>
+                                    {% endif %}
+                                    {% if request_status == 0 %}
+                                        <!-- Display send request button if no request sent -->
+                                        <button class="btn btn-secondary pull-right mb-2" id="sendRequestBtn" onclick="send_Request('{{user.id}}', reloadUI)" style="font-size: 12px;">Send Request</button>
+                                    {% endif %}
+                                {% elif is_friend == True %}
+                                    <!-- Display unfriend and message friend buttons for friends -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary pull-right mb-2 dropdown-toggle friends-btn" type="button" id="friends_toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            &nbsp Friends
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="friends_toggle">
+                                            <a class="dropdown-item" href="#" onclick="remove_Friend('{{user.id}}', reloadUI)">Unfriend</a>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary pull-right mb-2" href="chat">&nbsp Message &nbsp</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Display user's username -->
+                        <p class="card-text my-2">{{ user.username }}</p>
+                    </div>
+                    <!-- Show user's profile details -->
+                    <div class="card-body">
+                        <label class="small my-2" for="name">Name:</label>
+                        <span class="card-text" id="name">{{ user.first_name }} {{ user.last_name }}</span>
+                        <br>
+                        <label class="small my-2" for="emailAddress">Email address:</label>
+                        <span class="card-text" id="emailAddress">{{ user.email }}</span>
+                        <br>
+                        <label class="small my-2" for="phoneNumber">Phone Number:</label>
+                        <span class="card-text" id="phoneNumber">{{ profile.phone_number }}</span>
+                        <br>
+                        <label class="small my-2" for="dob">Date of Birth:</label>
+                        <span class="card-text" id="dob">{{ profile.dob }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts -->
+            <div class="col-12 col-md-8 my-5 mx-auto">
+                <!-- Tabs -->
+                <div class="tabs-wrapper profile-tabs">
+                    <ul class="nav nav-tabs mb-4">
+                        <li>
+                            <button class="nav-link active" href="#tab-posts" data-toggle="tab">Posts</button>
+                        </li>
+                        <li>
+                            <button class="nav-link" href="#tab-friends" data-toggle="tab">Friends ( {{ friend_list|length }} )</button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div class="tab-content">
+                        <!-- Post Tab content -->
+                        <div class="tab-pane fade show active col-md-9 mx-auto" id="tab-posts">
+                            {% if is_friend == False %}
+                                <!-- Display message for non-friends -->
+                                <div class="text-secondary d-flex flex-row justify-content-center p-4">
+                                    <p>You can only see your friend's posts</p>
+                                </div>
+                            {% elif is_friend == True %}
+                                {% if posts %}
+                                    {% for post in posts %}
+                                        <div class="card mx-auto my-5">
+                                            <div class="card-header bg-secondary text-light">
+                                                <img src="/media/{{ profile.image }}" class="rounded-circle profile">
+                                                &nbsp
+                                                {{post.user.username}}
+                                            </div>
+                                            {% if post.content_image %}
+                                                <img class="card-img-top" src="/media/{{post.content_image}}" alt="Card image cap">
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <p class="card-text">{{post.content}}</p>
+                                                
+                                                <!-- Post's Likes Icon -->
+                                                <a href="#">
+                                                    <i class="fa-solid fa-heart post_icons"></i>
+                                                    <span>1 Likes</span>
+                                                </a>
+                                                
+                                                &nbsp&nbsp
+                                    
+                                                <!-- Post's Comments Icon -->
+                                                <a href="#inputComments1" data-toggle="collapse">
+                                                    <i class="fa-solid fa-message post_icons"></i>
+                                                    <span>1 Comments</span>
+                                                </a>
+                                            
+                                                <div class="row">
+                                                    <!-- Post's View Comments Link -->
+                                                    <a href="#collapseComments1" data-toggle="collapse" class="text-secondary col-md-7">
+                                                        <p>View comments</p>
+                                                    </a>
+                                                    <!-- Post's date and time -->
+                                                    <p class="col-md-5 text-right text-secondary" style="font-size: 14px;">{{post.timestamp}}</p>
+                                                </div>
+                                    
+                                                <!-- Post's View Comments -->
+                                                <div class="collapse" id="collapseComments1">
+                                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle profile">
+                                                    &nbsp
+                                                    some comments some comments some comments
+                                                </div>
+                                    
+                                                <!-- Post's Comments Input Box -->
+                                                <div class="collapse" id="inputComments1">
+                                                    <div class="input-group my-2">
+                                                        <input type="text" class="form-control" placeholder="Enter a comment..." aria-label="Enter a comment..."                                                         aria-describedby="basic-addon2">
+                                                        <div class="input-group-append">
+                                                            <button class="btn btn-outline-secondary" type="submit">Comment</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Display message when there are no posts -->
+                                    <div class="text-secondary d-flex flex-row justify-content-center p-4">
+                                        <p>No posts</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <!-- Friends Tab content -->
+                        <div class="tab-pane fade" id="tab-friends">
+                            {% if is_friend == False %}
+                                <!-- Display message for non-friends -->
+                                <div class="text-secondary d-flex flex-row justify-content-center p-4">
+                                    <p>You can only see your friend's friend list</p>
+                                </div>
+                            {% elif is_friend == True %}
+                                {% if friend_list %}
+                                    {% for friend in friend_list %}
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                {% for p in friend_profile %}
+                                                    {% if p.user == friend %}
+                                                        <!-- Display friend's profile image -->
+                                                        <img src="/media/{{ p.image }}" class="rounded-circle ml-3" width="12%">
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <a class="card-text my-2 ml-3" href="friendDetail/{{ friend.current_user }}">{{ friend.current_user }}</a>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Display message when there are no friends -->
+                                    <div class="text-secondary d-flex flex-row justify-content-center p-4">
+                                        <p>No friends</p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript functions for AJAX requests -->
+    <!--
+ * reloadPage: 
+ * A function that triggers a refresh on the current web page.
+    -->
+    <script>
+        function reloadUI() {
+            location.reload(); // Reload the page
+        }
+        // ---------------------------------------------------------------------------------------------------------------------- >>
+        //  * sendFriendRequest: 
+ //* Initiates an AJAX request to send a friend request to a specified user.
+ //* This is useful in social features of a web application.
+        function send_Request(id, updateUI) {
+            context = {
+                "csrfmiddlewaretoken": "{{ csrf_token }}", // Use the CSRF token
+                "receiverID": id, // Use the receiverID to get the correct URL
+            }
+            // Send a friend request using AJAX
+            $.ajax({
+                type: "POST", // Use POST method
+                dataType: "json", // Use JSON data type
+                url: "{% url 'request' %}", // Use the request URL
+                timeout: 3000,
+                data: context,  // Use the context data
+                complete: function(data) {
+                    // Reload the page once the send function completes
+                    updateUI() // Reload the page
+                },
+            });
+        }
+        // ---------------------------------------------------------------------------------------------------------------------- >>
+        //  * cancelFriendRequest:
+// * Initiates an AJAX request to cancel a previously sent friend request.
+ // * Useful when a user changes their mind about adding someone as a friend.
+        function cancel_Request(id, updateUI) {
+            context = {
+                "csrfmiddlewaretoken": "{{ csrf_token }}",
+                "receiverID": id,
+            }
+            // Cancel a friend request using AJAX
+            $.ajax({
+                type: "POST", // Use POST method
+                dataType: "json", // Use JSON data type
+                url: "{% url 'cancel' %}", // Use the cancel URL
+                data: context, // Use the context data
+                timeout: 3000,
+                complete: function(data) {
+                    // Reload the page once the cancel function completes
+                    updateUI() // Reload the page
+                },
+            });
+        }
+
+        // ---------------------------------------------------------------------------------------------------------------------- >>`
+        // * unfriendUser: 
+        //* Initiates an AJAX request to remove a user from the friend list.
+        // * This could be used when a user wishes to end their online association with another user.
+        function remove_Friend(id, updateUI) {
+            context = {
+                "csrfmiddlewaretoken": "{{ csrf_token }}",
+                "receiverID": id,
+            }
+            // Remove a friend using AJAX
+            $.ajax({
+                type: "POST", // Use POST method
+                dataType: "json", // Use JSON data type
+                url: "{% url 'unfriend' %}", // Use the unfriend URL
+                data: context, // Use the context data
+                timeout: 3000, // Set a timeout of 3000ms
+                complete: function(data) {
+                    // Reload the page once the remove function completes
+                    updateUI()
+                },
+            });
+        }
+        // ---------------------------------------------------------------------------------------------------------------------- >>
+        // * acceptFriendRequest:
+ //* Initiates an AJAX request to accept a pending friend request.
+ // * This is utilized when a user agrees to establish a friend connection on the platform.
+        function approve_friend_request(req_id, updateUI) {
+            // Approve a friend request using AJAX
+            $.ajax({
+                type: "GET", // Use GET method
+                dataType: "json",
+                // Use req_id to get the correct URL
+                url: "{% url 'approve_friend_request' req_id=9999999999 %}".replace("9999999999", req_id), // Use the approve URL
+                timeout: 3000,
+                complete: function(data) {
+                    // Reload the page once the accept function completes
+                    updateUI() // Reload the page
+                },
+            });
+        }
+        // ---------------------------------------------------------------------------------------------------------------------- >>
+        // * declineFriendRequest:
+    //* Initiates an AJAX request to decline a pending friend request.
+ //* This can be employed when a user decides not to establish a friend connection on the platform.
+        function reject_friend_request(req_id, updateUI) {
+            // Reject a friend request using AJAX
+            $.ajax({
+                type: "GET", // Use GET method
+                dataType: "json",
+                // Use req_id to get the correct URL
+                url: "{% url 'reject_friend_request' req_id=9999999999 %}".replace("9999999999", req_id), // Use the reject URL
+                timeout: 3000,
+                complete: function(data) {
+                    // Reload the page once the decline function completes
+                    updateUI() // Reload the page
+                },
+            });
+        }
+    // ---------------------------------------------------------------------------------------------------------------------- >>
+    // End of JavaScript functions for AJAX requests
+    </script>
+{% endblock content %}

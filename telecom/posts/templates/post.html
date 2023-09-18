@@ -1,0 +1,154 @@
+{% extends "./site_home.html" %}
+
+{% block content %}
+
+    <!-- Check if the user is authenticated -->
+    {% if request.user.is_authenticated %}
+        
+        <!-- Container for the post creation form and the post listings -->
+        <div class="col-md-5 mx-auto my-5">
+
+            <!-- Form to allow users to upload a new post -->
+            <div class="card mx-auto my-5">
+                <form method="post" action="/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Section for uploading and previewing an image -->
+                    <div class="card-header bg-secondary text-light">
+                        <div class="form-group">
+                            <label for="postImage">Please choose an image to upload..</label>
+                            <input type="file" class="form-control-file" name="postImage" oninput="addImage(this)">
+                        </div>
+                        
+                        <!-- Preview area for the uploaded image -->
+                        <div class="image-area my-4">
+                            <img id="imageResult" src="#" alt="" class="img-fluid rounded shadow-sm mx-auto d-block">
+                        </div>
+                    </div>
+                    
+                    <!-- Section for adding post content -->
+                    <div class="card-body">
+                        <form class="form-inline my-2 my-lg-0">
+                            <textarea class="form-control" placeholder="Write something..." style="min-width: 100%" rows="10" name="content"></textarea>
+                            <span class="input-group-append">
+                                <button class="btn btn-secondary text-light my-2 my-sm-2" type="submit">
+                                    Enter
+                                </button>
+                            </span>
+                        </form>                
+                    </div>
+                </form>
+            </div>
+
+            <!-- Iterating over each post to display it -->
+            {% for post in posts %}
+                <div class="card mx-auto my-5">
+                    <div class="card-header bg-secondary text-light">
+                        {% if profile|length > 1 %}
+                            {% for p in profile %}
+                                {% if p.user.username == post.user.username %}
+                                    <img src="/media/{{ p.image }}" class="rounded-circle profile">
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <img src="/media/{{ profile.image }}" class="rounded-circle profile">
+                        {% endif %}
+                        &nbsp
+                        {{post.user.username}}
+                    </div>
+                    
+                    <!-- If the post has an image, display it -->
+                    {% if post.content_image %}
+                        <img class="card-img-top" src="media/{{post.content_image}}" alt="Card image cap">
+                    {% endif %}
+                    <div class="card-body">
+                        <!-- Display post's content -->
+                        <p class="card-text">{{post.content}}</p>
+
+                        <!-- Post's interactions: likes and comments -->
+                        <a href="#">
+                            <i class="fa-solid fa-heart post_icons"></i>
+                            <span>1 Likes</span>
+                        </a>
+                        &nbsp&nbsp
+                        <a href="#inputComments1" data-toggle="collapse">
+                            <i class="fa-solid fa-message post_icons"></i>
+                            <span>1 Comments</span>
+                        </a>
+
+                        <!-- Display the post's comments and timestamp -->
+                        <div class="row">
+                            <a href="#collapseComments1" data-toggle="collapse" class="text-secondary col-md-7">
+                                <p>View comments</p>
+                            </a>
+                            <p class="col-md-5 text-right text-secondary" style="font-size: 14px;">{{post.timestamp}}</p>
+                        </div>
+
+                        <!-- Display the comments for this post -->
+                        <div class="collapse" id="collapseComments1">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle profile">
+                            &nbsp
+                            some comments some comments some comments
+                        </div>
+
+                        <!-- Input field to add a new comment to the post -->
+                        <div class="collapse" id="inputComments1">
+                            <div class="input-group my-2">
+                                <input type="text" class="form-control" placeholder="Enter a comment..." aria-label="Enter a comment..." aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit">Comment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <!-- Display message to prompt users to sign up or log in -->
+        <div class="container text-center my-5 py-5" style="min-height: 300px;">
+            <h2>Telecom Inc.</h2>
+            <div class="my-5">
+                <p>Are you new to Telecom?<a href="register"> Sign up</a> now!</p>
+                <p>Do you have an account?<a href="login"> Login</a> here!</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Inline styling -->
+    <style>
+        .post_icons {
+            font-size: 25px;
+            margin: 5px;
+            margin-top: 0px;
+            margin-bottom: 10px;
+        }
+
+        #collapseComments {
+            margin-bottom: 15px;
+        }
+
+        #imageResult {
+            max-width: 20rem;
+        }
+    </style>
+
+    <!-- JavaScript function to preview uploaded image -->
+    <script>
+        function addImage(inputImage) {
+            // Check if the input is a file
+            if (inputImage.files && inputImage.files[0]) {
+                var reader = new FileReader(); // Create a FileReader object
+                // When the FileReader object loads, display the image
+                reader.onload = function (e) {
+                    var image = e.target.result // Get the image
+                    var imageField = document.getElementById('imageResult') // Get the image field
+                    imageField.src = image // Set the image field's source to the image
+                }; // End of onload function
+                reader.readAsDataURL(inputImage.files[0]); // Read the image
+            } // End of if statement
+        } // End of addImage function
+    </script>
+    
+{% endblock content %}

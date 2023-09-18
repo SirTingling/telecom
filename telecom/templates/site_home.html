@@ -1,0 +1,62 @@
+<!-- Load static files handler and bootstrap4 from Django templating system -->
+{% load static %}
+{% load bootstrap4 %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic meta tags for charset, compatibility, and viewport settings -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Load Bootstrap CSS and JS, along with jQuery -->
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+
+    <!-- Link to FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <!-- Link to the site's custom CSS and JS files -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}"></script>
+
+    <!-- Page title -->
+    <title>Telecom - Home page</title>
+</head>
+
+<body class="bg-white">
+
+    <!-- Include the site's header -->
+    {% include 'site_header.html' %}
+
+    <!-- Main content container -->
+    <div class="main">
+
+        <!-- Loop through and display any system messages to the user -->
+        {% for message in messages %}
+        <div class="container-fluid p-0">
+            <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                <!-- Close button for the alert -->
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="True">&times;</span>
+                </button>
+                <!-- Display the actual message content -->
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Placeholder for content that will be filled by child templates -->
+        {% block content %}
+        {% endblock content %}
+    </div>
+
+    <!-- Include the site's footer -->
+    <footer>
+        {% include 'site_footer.html' %}
+    </footer>
+
+</body>
+</html>

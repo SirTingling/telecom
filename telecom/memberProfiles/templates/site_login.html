@@ -1,0 +1,60 @@
+{% extends "./site_home.html" %} <!-- Extends the base layout of the website -->
+
+{% block content %} <!-- Start of the main content block -->
+
+    {% load static %} <!-- Load static files (images, CSS, JS) -->
+
+    <!-- Centered Login Card -->
+    <div class="col-md-6 mx-auto my-5">
+        
+        <!-- Login Card -->
+        <div class="card">
+
+            <!-- Login Card Header -->
+            <div class="card-header bg-dark text-light">
+                Login <!-- Title of the card -->
+            </div>
+
+            <!-- Login Card Body -->
+            <div class="card-body">
+                
+                <!-- Display User Image -->
+                <img class="rounded-circle img-fluid mx-auto my-3 d-block" width="30%" src="{% static 'appMedia/person.png' %}">
+                
+                <!-- Start of Login Form -->
+                <form id="login_form" method="post" action="login" enctype="multipart/form-data">
+                    
+                    {% csrf_token %} <!-- Token for security and preventing CSRF attacks -->
+
+                    <!-- Username Input Section -->
+                    <div class="mb-3">
+                        <label class="small mb-1" for="username">Username</label>
+                        <input class="form-control" id="username" name="username" type="text" placeholder="Enter your username">
+                    </div>
+
+                    <!-- Password Input Section -->
+                    <div class="mb-3">
+                        <label class="small mb-1" for="password">Password</label>
+                        <input class="form-control" id="password" name="password" type="password" placeholder="Enter your password">
+                    </div>
+
+                    <!-- Bottom Row with "Forgot password" link and Login Button -->
+                    <div class="row">
+                        <div class="col-9 col-md-10 my-auto">
+                            <a href="#" class="forgot-password">Forgot password?</a> <!-- Link to retrieve forgotten password -->
+                        </div>
+                        <div class="col-3 col-md-2">
+                            <!-- Login Button -->
+                            <input class="btn btn-dark text-light px-2" type="submit" name="submit" value="Lets go!" />
+                        </div>
+                    </div>
+
+                </form> <!-- End of Login Form -->
+
+            </div> <!-- End of Login Card Body -->
+
+        </div> <!-- End of Login Card -->
+
+    </div> <!-- End of Centered Login Card -->
+
+{% endblock content %} <!-- End of the main content block -->

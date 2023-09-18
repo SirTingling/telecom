@@ -1,0 +1,66 @@
+<!-- Extending the base template "site_home.html" which contains common structural elements of the site, like header and footer. -->
+{% extends "./site_home.html" %}
+
+<!-- Loading the static module to facilitate access to static files like CSS, JS, etc. -->
+{% load static %}
+
+<!-- Content block which will be injected into "site_home.html" at the appropriate block tag location. -->
+{% block content %}
+
+    <!-- Check if the user is authenticated -->
+    {% if user.is_authenticated %}
+    
+        <!-- Main content wrapper -->
+        <div class="row mx-auto my-5">
+            
+            <!-- Left column: Display the chatrooms -->
+            <div class="col-md-5">
+                <h4 class="text-center">Chatrooms:</h4>
+                
+                <!-- Check if there are any chatrooms available -->
+                {% if chatroom %}
+                    <!-- Loop through all the chatrooms and display them -->
+                    {% for room in chatroom %}
+                        <div class="card col-md-6 mb-3 mx-auto">
+                            <div class="card-body text-center border-dark">
+                                <a href="{{room.chatroom}}">{{room.chatroom}}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- If no chatrooms are available, display a message -->
+                    <div class="text-secondary d-flex flex-row justify-content-center p-4">
+                        <p>No chatroom available</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Right column: Form to create a new chatroom -->
+            <div class="col-md-7">
+                <!-- Chatroom creation form with a POST method -->
+                <form method="post">
+                    <!-- CSRF Token for security during form submission -->
+                    {% csrf_token %}
+                    
+                    <!-- Form label -->
+                    <label for="chatroom">Create a new chatroom:</label>
+                    
+                    <!-- Form inputs wrapped in rows for structure -->
+                    <div class="row form-group">
+                        <!-- Chatroom input field -->
+                        <div class="col-md-8">
+                            {{chatroomForm.chatroom}}
+                        </div>
+                        
+                        <!-- Submit button for the form -->
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-secondary text-right" id="chatroom_submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    {% endif %}
+
+{% endblock content %}

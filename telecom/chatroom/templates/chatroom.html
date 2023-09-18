@@ -1,0 +1,93 @@
+<!-- Extending the base template "site_home.html" which contains common structural elements of the site, like header and footer. -->
+{% extends "./site_home.html" %}
+
+<!-- Content block which will be injected into "site_home.html" at the appropriate block tag location. -->
+{% block content %}
+
+    <!-- Loading the static module to facilitate access to static files like CSS, JS, etc. -->
+    {% load static %}
+
+    <!-- Main content wrapper -->
+    <div class="col-md-7 mx-auto my-5">
+
+        <!-- Chatroom header section with title and delete button -->
+        <div class="d-flex justify-content-between">
+            <h4>Chatroom: &nbsp&nbsp&nbsp {{chatroom_name}}</h4>
+
+            <!-- Form to delete the chatroom -->
+            <form method="post" action="deleteChatroom/{{chatroom_name}}">
+                <!-- CSRF Token for security during form submission -->
+                {% csrf_token %}
+                <button class="btn btn-secondary" type="submit">Delete chatroom</button>
+            </form>
+        </div>
+
+        <!-- Visual separator for layout -->
+        <hr>
+        <br>
+
+        <!-- Display the username of the logged-in user -->
+        <p>You are logged in as
+            <span id="user">{{user.username}}</span>
+        </p>
+
+        <!-- Textarea to display the chat messages -->
+        <textarea class="bg-secondary text-light" id="chat-log" cols="80" rows="15"></textarea><br>
+
+        <!-- Input field to type chat message -->
+        <input class="mr-3 mt-2" id="chat-message-input" type="text" size="70">
+
+        <!-- Button to send the chat message -->
+        <input id="chat-message-submit" class="btn btn-secondary text-right px-4" type="button" value="Send">
+    </div>
+
+    <!-- Passing the chatroom name to JavaScript -->
+    {{ chatroom_name|json_script:"room-name" }}
+
+    <!-- JavaScript for handling chat functionalities -->
+    <script>
+        // Extract the room name from the rendered content
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+        // Establish WebSocket connection for the chatroom
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
+
+        // Event when a new chat message is received
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            // Append the received message to the chat log
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        // Event when the WebSocket connection is closed
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        // Set focus on the message input when the page loads
+        document.querySelector('#chat-message-input').focus();
+
+        // Listen for the enter key in the chat message input to send the message
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // Enter key
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        // Event to send the chat message when the "Send" button is clicked
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            const user = document.getElementById('user').textContent;  // Extract the username
+
+            // Send the chat message through the WebSocket connection
+            chatSocket.send(JSON.stringify({
+                'message': user + ': ' + message
+            }));
+
+            // Clear the chat message input field
+            messageInputDom.value = '';
+        };
+    </script>
+
+{% endblock content %}

@@ -1,0 +1,50 @@
+<!-- Defining the document type as HTML5 -->
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <!-- Meta and character set declarations for better compatibility -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Linking to the Swagger UI CSS for styling the API documentation -->
+        <link rel="stylesheet" type="text/css"
+              href="//unpkg.com/swagger-ui-dist@3/swagger-ui.css" />
+    </head>
+    
+    <body>
+        <!-- Container div for the Swagger UI to populate and display API documentation -->
+        <div id="swagger-ui"></div>
+        
+        <!-- Including the Swagger UI bundle JavaScript, which contains the necessary functionality for rendering the API documentation -->
+        <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+        
+        <script>
+            // Initializing Swagger UI
+            const ui = SwaggerUIBundle({
+                // Specifying the URL for the API schema which Swagger will use to generate documentation
+                url: "{% url schema_url %}",
+                
+                // Specifying the DOM element where Swagger UI will be rendered
+                dom_id: '#swagger-ui',
+                
+                // Setting the presets which determine how Swagger UI behaves and looks
+                presets: [
+                    SwaggerUIBundle.presets.apis,                   // Standard preset for rendering API sections
+                    SwaggerUIBundle.SwaggerUIStandalonePreset       // Preset that enables the top bar (explore bar)
+                ],
+                
+                // Setting the layout for Swagger UI
+                layout: "BaseLayout",
+                
+                // Intercepting requests made by Swagger UI to the server for additional modifications
+                requestInterceptor: (request) => {
+                    // Adding the CSRF token to requests for security reasons
+                    request.headers['X-CSRFToken'] = "{{ csrf_token }}" // The CSRF token is passed in from the Django template
+                    return request; // Returning the modified request
+                } // End of requestInterceptor
+            })
+        </script>
+    </body>
+</html>
+// Site swagger end snippet of telecom/templates/site_swagger.html

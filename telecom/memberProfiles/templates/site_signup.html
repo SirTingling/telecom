@@ -1,0 +1,84 @@
+{% extends "./site_home.html" %}
+
+{% block content %}
+    {% load static %}
+
+    <!-- Check if the user is not registered -->
+    {% if not registered %}
+
+        <!-- Main container for registration form -->
+        <div class="col-md-6 mx-auto my-5">
+
+            <!-- Registration card -->
+            <div class="card">
+                
+                <!-- Card header -->
+                <div class="card-header bg-dark text-light">Register Account</div>
+                
+                <!-- Card body containing the registration form -->
+                <div class="card-body">
+
+                    <!-- Default profile picture for new registration -->
+                    <img class="rounded-circle img-fluid mx-auto my-3 d-block" width="30%" src="{% static 'appMedia/person.png' %}">
+
+                    <!-- Start of the registration form -->
+                    <form id="user_form" method="post" action="register" enctype="multipart/form-data">
+                        
+                        {% csrf_token %} <!-- CSRF token for security -->
+
+                        <!-- Form Group for username -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="username">{{ user_form.username.label }}</label>
+                            {{ user_form.username }}
+                        </div>
+
+                        <!-- Form Row for first name and last name -->
+                        <div class="row gx-3 mb-3">
+
+                            <!-- Form Group for first name -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="first_name">{{ user_form.first_name.label }}</label>
+                                {{ user_form.first_name }}
+                            </div>
+
+                            <!-- Form Group for last name -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="last_name">{{ user_form.last_name.label }}</label>
+                                {{ user_form.last_name }}
+                            </div>
+
+                        </div>
+
+                        <!-- Form Group for email address -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="email">{{ user_form.email.label }}</label>
+                            {{ user_form.email }}
+                        </div>
+
+                        <!-- Form Row for password -->
+                        <div class="row gx-3 mb-3">
+
+                            <!-- Form Group for password -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="password">{{ user_form.password.label }}</label>
+                                {{ user_form.password }}
+                            </div>
+
+                        </div>
+
+                        <!-- Register button -->
+                        <div class="text-right">
+                            <input class="btn btn-dark text-light px-2" type="submit" name="submit" value="Register" />
+                        </div>
+
+                    </form> <!-- End of the registration form -->
+
+                </div> <!-- End of card body -->
+
+            </div> <!-- End of registration card -->
+
+        </div> <!-- End of main container -->
+
+    {% endif %} <!-- End of if condition to check registration status -->
+
+{% endblock content %}
