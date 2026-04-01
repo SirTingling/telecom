@@ -45,7 +45,7 @@ cffi==1.15.1
 cryptography==37.0.4
 pyOpenSSL==22.0.0
 zope.interface==5.4.0
-pyasn1==0.4.8
+pyasn1==0.6.3
 pyasn1-modules==0.2.8
 
 # Image processing
