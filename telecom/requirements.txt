@@ -68,7 +68,7 @@ django-model-utils==4.1.1
 django-filter==2.4.0
 
 # For authentication in DRF
-djangorestframework-simplejwt==5.0.0
+djangorestframework-simplejwt==5.5.1
 
 # For environmental variable management
 python-decouple==3.5
