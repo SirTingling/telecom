@@ -49,7 +49,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 
 # Image processing
-Pillow==9.2.0
+Pillow==12.2.0
 
 # Others..
 attrs==21.4.0
